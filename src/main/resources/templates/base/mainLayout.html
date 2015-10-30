@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security3">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title></title>
+        <!--Begin Base Layout Stylesheets-->
+        <link th:href="@{inspinia/css/bootstrap.min.css}" rel="stylesheet" href="../..inspinia/css/bootstrap.min.css"/>
+        <link th:href="@{inspinia/font-awesome/css/font-awesome.css}" rel="stylesheet" href="../..inspinia/font-awesome/css/font-awesome.css"/>
+        <!--Inspinia Mainly scripts-->
+        <script th:src="@{inspinia/js/jquery-2.1.1.js}" src="../..inspinia/js/jquery-ui-1.10.4.min.js"></script>
+        <th:block layout:fragment="scriptsBeforeBootstrap"></th:block>
+        <script th:src="@{inspinia/js/bootstrap.min.js}" src="../..inspinia/js/bootstrap.min.js"></script>
+        <script th:src="@{inspinia/js/plugins/metisMenu/jquery.metisMenu.js}" src="../..inspinia/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+        <script th:src="@{inspinia/js/plugins/slimscroll/jquery.slimscroll.min.js}" src="../..inspinia/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+        <!--Inspinia Custom and plugin javascript-->
+        <script th:src="@{inspinia/js/plugins/pace/pace.min.js}" src="../..inspinia/js/plugins/pace/pace.min.js"></script>
+        <script th:src="@{inspinia/js/plugins/typeahead/typeahead.bundle.min.js}" ></script>
+        <!--Particular Page Scripts-->
+        <th:block layout:fragment="pageScripts"></th:block>
+        <script th:src="@{inspinia/js/inspinia.js}" src="../..inspinia/js/inspinia.js"></script>
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+
+                var substringMatcher = function (strs) {
+                    return function findMatches(q, cb) {
+                        var matches, substringRegex;
+
+                        // an array that will be populated with substring matches
+                        matches = [];
+
+                        // regex used to determine if a string contains the substring `q`
+                        substrRegex = new RegExp(q, 'i');
+
+                        // iterate through the pool of strings and for any string that
+                        // contains the substring `q`, add it to the `matches` array
+                        $.each(strs, function (i, str) {
+                            if (substrRegex.test(str)) {
+                                matches.push(str);
+                            }
+                        });
+
+                        cb(matches);
+                    };
+                };
+
+                var causas = ['002/E20', '004/R40', '001', 'C00900'
+                ];
+                var personas = ['Carlos Navarrete', 'César Castillo', 'Sandra Ramírez', 'Alberto Sosa'
+                ];
+
+                var delitos = ['Asesinato', 'Robo', 'Violación de Domicilio', 'Ebridad en Público'];
+
+                $('#top-search').typeahead({
+                            hint: true,
+                            highlight: true,
+                            minLength: 1
+                        },
+                        {
+                            name: 'causas',
+                            source: substringMatcher(causas),
+                            templates: {
+                                header: '<p class="tt-suggestionHeader">Causas</p>'
+                            }
+                        },
+                        {
+                            name: 'personas',
+                            source: substringMatcher(personas),
+                            templates: {
+                                header: '<p class="tt-suggestionHeader">Personas</p>'
+                            }
+                        },
+                        {
+                            name: 'delitos',
+                            source: substringMatcher(delitos),
+                            templates: {
+                                header: '<p class="tt-suggestionHeader">Delitos</p>'
+                            }
+                        });
+            });
+        </script>
+    </head>
+
+    <body>
+        <div id="wrapper">
+            <nav class="navbar-default navbar-static-side" role="navigation">
+                <div class="sidebar-collapse">
+
+                    <ul class="nav" id="side-menu">
+                        <li class="nav-header">    
+
+                            <div class="dropdown profile-element">
+
+                                <div style="margin:-15px 60px;">
+                                    <img alt="image" height="30" th:src="@{img/mopgp_web.png}"/>
+                                </div>
+
+                                <span>
+                                    <img alt="image" class="img-circle" th:src="@{inspinia/img/profile_small.jpg}"/>
+                                </span>
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                    <span class="clear"> 
+                                        <span class="block m-t-xs"> 
+                                            <strong class="font-bold">Miguel Angel</strong>
+                                        </span> 
+                                        <span class="text-muted text-xs block">Magistrado <b class="caret"></b></span> 
+                                    </span> 
+                                </a>
+                                <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                                    <li><a th:href="@{/logout}">Salir</a></li>
+                                </ul>
+                            </div>
+                            <div class="logo-element">
+                                MOP<em>gp</em>
+                            </div>
+                        </li>
+                        <li class="active">
+                            <a th:href="@{/tableroControl}" href="#">
+                                <i class="fa fa-th-large"></i>
+                                <span class="nav-label">Tablero de Control</span>
+                            </a>
+                        </li>
+                        <li sec:authorize="hasRole('ROLE_JUEZ')">
+                            <a th:href="@{/solicitudesAudiencia}" href="#">
+                                <i class="fa fa-inbox"></i>
+                                <span class="nav-label">Bandeja de Entrada</span>
+                            </a>
+                        </li>
+                        <li sec:authorize="not hasRole('ROLE_JUEZ')">
+                            <a href="#">
+                                <i class="fa fa-inbox"></i>
+                                <span class="nav-label">Bandeja de Entrada</span>
+                            </a>
+                        </li>
+                        <!--
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-send"></i>
+                                <span class="nav-label">Documentos Enviados</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-exchange"></i>
+                                <span class="nav-label">Documentos Compartidos</span>
+                            </a>
+                        </li>-->
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-cubes"></i>
+                                <span class="nav-label">Expedientes RED</span>
+                                <span class="fa arrow"></span>
+                            </a>
+                            <ul sec:authorize="hasRole('ROLE_CES')" class="nav nav-second-level collapse">
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-envelope"></i>
+                                        <span class="nav-label">Indicios de Investigación</span>
+                                    </a>
+                                </li>
+                            </ul>    
+                            <ul sec:authorize="hasRole('ROLE_MINISTERIO')" class="nav nav-second-level collapse">
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-arrow-circle-o-left"></i>
+                                        <span class="nav-label">Carpeta de Corroboración</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-slack"></i>
+                                        <span class="nav-label">Denuncias o Querellas</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-circle-o"></i>
+                                        <span class="nav-label">Investigaciones</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-recycle"></i>
+                                        <span class="nav-label">Archivos Temporales</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-dot-circle-o"></i>
+                                        <span class="nav-label">Archivos Definitivos</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-legal"></i>
+                                        <span class="nav-label">Archivos Judicializados</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <ul sec:authorize="hasRole('ROLE_JUEZ')" class="nav nav-second-level collapse">                                
+
+                                <li>
+                                    <a th:href="@{/causas}" href="#">
+                                        <i class="fa fa-navicon"></i>
+                                        <span class="nav-label">Causas</span>
+                                    </a>
+                                </li>  
+                                <li>
+                                    <a th:href="@{/listarAudienciasEspeciales}" href="#">
+                                        <i class="fa fa-tags"></i>
+                                        <span class="nav-label">Audiencias especiales</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/listarAudienciasEspeciales}" href="#">
+                                        <i class="fa fa-male"></i>
+                                        <span class="nav-label">Acciones penales por particular</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/causas}" href="#">
+                                        <i class="fa fa-archive"></i>
+                                        <span class="nav-label">Causas concluidas</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/listarRechazadas}" href="#">
+                                        <i class="fa fa-ban"></i>
+                                        <span class="nav-label">Solicitudes Rechazadas</span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul sec:authorize="hasRole('ROLE_DEFENSOR')" class="nav nav-second-level collapse">
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-archive"></i>
+                                        <span class="nav-label">Control Interno</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-folder"></i>
+                                        <span class="nav-label">Casos</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-dot-circle-o"></i>
+                                        <span class="nav-label">Concluidos</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!--
+                        <li sec:authorize="hasRole('ROLE_JUEZ')">
+                            <a th:href="@{/agendarAudiencia}">
+                                <i class="fa fa-calendar"></i>
+                                <span class="nav-label">Agendar Audiencias</span>
+                            </a>
+                        </li>-->
+                        <li sec:authorize="hasRole('ROLE_JUEZ') or hasRole('ROLE_DEFENSOR')">
+                            <a th:href="@{/audiencias}" href="#">
+                                <i class="fa fa-calendar"></i>
+                                <span class="nav-label">Itinerario de Audiencias</span>
+                            </a>
+                        </li>
+                        <!--
+                        <li>
+                            <a th:href="@{/plantillas}" href="#">
+                                <i class="fa fa-file-word-o"></i>
+                                <span class="nav-label">Mis Plantillas</span>
+                            </a>
+                        </li>-->
+                        <li sec:authorize="hasRole('ROLE_JUEZ')">
+                            <a th:href="@{/bibliotecaJuridica}" href="#">
+                                <i class="fa fa-book"></i>
+                                <span class="nav-label">Biblioteca Jurídica</span>    
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div id="page-wrapper" class="gray-bg">
+                <div class="row border-bottom">
+                    <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                        <div class="navbar-header">
+                            <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+                            <form role="search" class="navbar-form-custom" method="post" action="#">
+                                <div class="form-group">
+                                    <input type="text" placeholder="Buscar..." class="form-control" name="top-search" id="top-search"/>
+                                </div>
+                            </form>
+                        </div>
+                        <ul class="nav navbar-top-links navbar-right">                            
+                            <li class="dropdown">
+                                <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-bell"></i>  <span class="label label-warning">3</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-alerts">
+                                    <li>
+                                        <a th:href="@{/solicitudesAudiencia}">
+                                            <div>
+                                                <i class="fa fa-inbox fa-fw"></i> Nueva solicitud
+                                                <span class="pull-right text-muted small">Hace 2 min.</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <a th:href="@{/causas}">
+                                            <div>
+                                                <i class="fa fa-film fa-fw"></i> Nuevo video de audiencia
+                                                <span class="pull-right text-muted small">Hace 6 min.</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <a th:href="@{/audiencias/1234/videos}">
+                                            <div>
+                                                <i class="fa fa-bullhorn fa-fw"></i> Inicia audiencia en <strong>15</strong> min.
+                                                <span class="pull-right text-muted small">Hace 30 min.</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a th:href="@{/logout}" href="#">
+                                    <i class="fa fa-sign-out"></i> Salir
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <!--
+                    Page Heading
+                -->
+
+                <th:block layout:fragment="cintillo" >
+
+                </th:block>
+
+
+                <!--
+                    Fragment Content
+                -->
+                <div layout:fragment="content" class="wrapper wrapper-content animated fadeInRight">
+                    <!-- Content Goes Here -->
+                </div>
+                <!--
+                    Fragment Footer
+                -->
+                <div layout:fragment="footer" class="footer">
+                    <div class="pull-right">
+                        módulo de tribunales por <strong>MOP<em>gp</em></strong>
+                    </div>
+                    <div>
+                        <strong>Copyright</strong> Lucasian Labs México Y Tres i por Ti &copy; 2015
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <style type="text/css">
+            .typeahead,
+            .tt-query,
+            .tt-hint {
+                width: 396px;
+                height: 30px;
+                padding: 8px 12px;
+                font-size: 24px;
+                line-height: 30px;
+                border: 2px solid #ccc;
+                -webkit-border-radius: 8px;
+                -moz-border-radius: 8px;
+                border-radius: 8px;
+                outline: none;
+            }
+
+            .typeahead {
+                background-color: #fff;
+            }
+
+            .typeahead:focus {
+                border: 2px solid #0097cf;
+            }
+
+            .tt-query {
+                -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+                -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            }
+
+            .tt-hint {
+                color: #999
+            }
+
+            .tt-menu {
+                width: 422px;
+                margin: 0px 0;
+                padding: 8px 0;
+                background-color: #fff;
+                border: 1px solid #ccc;
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                -webkit-border-radius: 8px;
+                -moz-border-radius: 8px;
+                border-radius: 8px;
+                -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                box-shadow: 0 5px 10px rgba(0,0,0,.2);
+            }
+
+            .tt-suggestion {
+                padding: 3px 20px;
+                font-size: 18px;
+                line-height: 24px;
+            }
+
+            .tt-suggestion:hover {
+                cursor: pointer;
+                color: #fff;
+                background-color: #0097cf;
+            }
+
+            .tt-suggestion.tt-cursor {
+                color: #fff;
+                background-color: #0097cf;
+
+            }
+
+            .tt-suggestion p {
+                margin: 0;
+            }
+
+            .tt-suggestionHeader {
+                padding: 3px 20px;
+                font-size: 18px;
+                line-height: 24px;
+                color: #fff;
+                background-color: #1ab394;
+            }                        
+
+            .tt-suggestionHeader p {
+                margin: 0;
+            }
+
+            .gist {
+                font-size: 14px;
+            }
+        </style>
+
+    </body>
+</html>

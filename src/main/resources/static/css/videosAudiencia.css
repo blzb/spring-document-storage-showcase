@@ -1,0 +1,23 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jul 9, 2015, 9:05:35 PM
+    Author     : cesar
+*/
+#galeriaVideoAudiencia{
+    
+}
+#galeriaVideoAudiencia li{
+    display: block;
+    float: left;
+    margin-right: 6px;
+    margin-bottom: 6px;
+}
+
+#galeriaVideoAudiencia li a img{
+    max-width: 205px;
+    max-height: 175px;
+}
